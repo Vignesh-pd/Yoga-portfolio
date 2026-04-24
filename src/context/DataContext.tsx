@@ -161,12 +161,12 @@ For me, yoga is not just something I practice on a mat. It is a way of life that
 function getFallbackContact(): ContactInfo {
   return {
     id: 1,
-    whatsapp_number: '+919876543210',
-    instagram_handle: '@vignesh_yoga',
-    instagram_url: 'https://instagram.com/vignesh_yoga',
-    email: 'vigneshyoga@email.com',
-    phone: '+919876543210',
-    location: 'India',
+    whatsapp_number: '+919010976762',
+    instagram_handle: '@vigidilli',
+    instagram_url: 'https://instagram.com/vigidilli',
+    email: 'vigneshpd@yahoo.in',
+    phone: '+33745641510',
+    location: 'France',
     updated_at: '',
   }
 }
