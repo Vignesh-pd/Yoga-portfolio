@@ -2,8 +2,7 @@ import { useData } from '@/context/DataContext'
 
 export default function FloatingWhatsApp() {
   const { contact } = useData()
-  const number = contact?.whatsapp_number || '+919876543210'
-
+  const number = contact?.whatsapp_number || '+919010976762' // Default number if not set in database
   return (
     <a
       href={`https://wa.me/${number.replace(/[^0-9]/g, '')}`}
