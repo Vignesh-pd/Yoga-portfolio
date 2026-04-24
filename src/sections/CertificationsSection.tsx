@@ -35,7 +35,7 @@ export default function CertificatesSection() {
 
       if (label) {
         gsap.from(label, {
-          opacity: 0,
+          
           y: 15,
           duration: 0.6,
           scrollTrigger: { trigger: section, start: 'top 85%', once: true },
@@ -44,7 +44,7 @@ export default function CertificatesSection() {
 
       if (title) {
         gsap.from(title, {
-          opacity: 0,
+          
           y: 40,
           duration: 0.8,
           scrollTrigger: { trigger: section, start: 'top 85%', once: true },
@@ -53,11 +53,11 @@ export default function CertificatesSection() {
 
       if (cards.length > 0) {
         gsap.from(cards, {
-          opacity: 0,
+          
           y: 50,
           duration: 0.8,
           stagger: 0.15,
-          scrollTrigger: { trigger: cards[0], start: 'top 88%', once: true },
+          scrollTrigger: { trigger: section, start: 'top 88%', once: true },
         })
       }
     }, section)

@@ -9,10 +9,7 @@ import type { GalleryItem as GalleryItemType } from '@/types/database'
 
 gsap.registerPlugin(ScrollTrigger)
 
-type CategoryFilter = 'all' | 'yoga' | 'strength' | 'lifestyle'
-
 type Props = {
-  initialFilter?: 'all' | 'photo' | 'video'
   showAll?: boolean
 }
 
@@ -20,90 +17,142 @@ export default function GallerySection({ showAll = false }: Props) {
   const navigate = useNavigate()
   const { photos, videos } = useData()
   const isMobile = useIsMobile()
-  const [lightbox, setLightbox] = useState<{ open: boolean; index: number }>({ open: false, index: 0 })
   const sectionRef = useRef<HTMLElement>(null)
 
-  // Build gallery items with categories
-  const allItems: (GalleryItemType & { category: CategoryFilter })[] = [
-    ...photos.map((p, i) => ({
-      ...p, type: 'photo' as const, url: p.public_url,
-      category: (['yoga','yoga','yoga','lifestyle','yoga','yoga','yoga','yoga','lifestyle'][i] || 'yoga') as CategoryFilter,
+  const [lightbox, setLightbox] = useState({ open: false, index: 0 })
+
+  // ✅ Build items safely
+  const allItems: (GalleryItemType & { type: 'photo' | 'video' })[] = [
+    ...photos.map((p) => ({
+      ...p,
+      type: 'photo' as const,
+      url: p.public_url,
     })),
-    ...videos.map((v, i) => ({
-      ...v, type: 'video' as const, url: v.public_url,
-      poster_url: v.poster_url, duration: v.duration,
-      category: (['yoga','yoga','yoga','yoga','lifestyle'][i] || 'yoga') as CategoryFilter,
+    ...videos.map((v) => ({
+      ...v,
+      type: 'video' as const,
+      url: v.public_url,
+      poster_url: v.poster_url,
+      duration: v.duration,
     })),
   ]
 
   const displayItems = showAll ? allItems : allItems.slice(0, 9)
 
+  // =========================
+  // Lightbox
+  // =========================
   const openLightbox = (index: number) => {
     setLightbox({ open: true, index })
     document.body.style.overflow = 'hidden'
   }
+
   const closeLightbox = () => {
     setLightbox({ open: false, index: 0 })
     document.body.style.overflow = ''
   }
+
   const goNext = useCallback(() => {
-    setLightbox(p => ({ ...p, index: (p.index + 1) % displayItems.length }))
-  }, [displayItems.length])
-  const goPrev = useCallback(() => {
-    setLightbox(p => ({ ...p, index: (p.index - 1 + displayItems.length) % displayItems.length }))
+    setLightbox((p) => ({
+      ...p,
+      index: (p.index + 1) % displayItems.length,
+    }))
   }, [displayItems.length])
 
-  // Keyboard nav
+  const goPrev = useCallback(() => {
+    setLightbox((p) => ({
+      ...p,
+      index: (p.index - 1 + displayItems.length) % displayItems.length,
+    }))
+  }, [displayItems.length])
+
+  // Keyboard support
   useEffect(() => {
     if (!lightbox.open) return
+
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') closeLightbox()
       if (e.key === 'ArrowRight') goNext()
       if (e.key === 'ArrowLeft') goPrev()
     }
+
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [lightbox.open, goNext, goPrev])
 
-  // Scroll animations
+  // =========================
+  // ✅ SAFE GSAP ANIMATION
+  // =========================
   useEffect(() => {
     const section = sectionRef.current
     if (!section) return
 
-    const timeout = setTimeout(() => {
-      const ctx = gsap.context(() => {
-        // Refresh ScrollTrigger
-        ScrollTrigger.refresh()
-
+    const ctx = gsap.context(() => {
+      try {
         const label = section.querySelector('.gallery-label')
-        if (label) {
-          gsap.from(label, {
-            opacity: 0, y: 15, duration: 0.6,
-            scrollTrigger: { trigger: section, start: 'top 88%' },
-          })
-        }
-
         const title = section.querySelector('.gallery-title')
-        if (title) {
-          gsap.from(title, {
-            opacity: 0, y: 50, duration: 0.9,
-            scrollTrigger: { trigger: section, start: 'top 88%' },
-          })
-        }
-
         const items = section.querySelectorAll('.gallery-item')
-        if (items.length > 0) {
-          gsap.from(items, {
-            opacity: 0, y: 50, scale: 1.02, duration: 0.8, stagger: 0.08,
-            scrollTrigger: { trigger: items[0], start: 'top 88%' },
-          })
+
+        // 🔥 SAFE ELEMENT HANDLING
+        const elements = [label, title, ...Array.from(items)].filter(Boolean)
+
+        if (elements.length > 0) {
+          gsap.set(elements, { opacity: 1, y: 0 })
         }
-      }, section)
 
-      return () => ctx.revert()
-    }, 100)
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 80%',
+            once: true,
+          },
+        })
 
-    return () => clearTimeout(timeout)
+        if (label) {
+          tl.fromTo(
+            label,
+            { opacity: 0, y: 10 },
+            { opacity: 1, y: 0, duration: 0.5 }
+          )
+        }
+
+        if (title) {
+          tl.fromTo(
+            title,
+            { opacity: 0, y: 40 },
+            { opacity: 1, y: 0, duration: 0.7 },
+            '-=0.3'
+          )
+        }
+
+        if (items.length > 0) {
+          tl.fromTo(
+            items,
+            { opacity: 0, y: 50, scale: 0.95 },
+            {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.7,
+              stagger: 0.08,
+              ease: 'power2.out',
+            },
+            '-=0.3'
+          )
+        }
+      } catch (err) {
+        console.error('GSAP Error:', err)
+      }
+    }, section)
+
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh()
+    }, 200)
+
+    return () => {
+      clearTimeout(timer)
+      ctx.revert()
+    }
   }, [displayItems])
 
   return (
@@ -114,27 +163,24 @@ export default function GallerySection({ showAll = false }: Props) {
       style={{ padding: isMobile ? '80px 0' : '160px 0' }}
     >
       <div className="section-container">
-        <p className="gallery-label font-mono-label mb-6" style={{ opacity: 1, color: 'var(--gold-600)' }}>
+
+        {/* Label */}
+        <p className="gallery-label mb-6" style={{ color: 'var(--gold-600)' }}>
           GALLERY
         </p>
 
         {/* Title */}
         <h2
-          className="gallery-title font-display mb-8"
+          className="gallery-title mb-8"
           style={{
-            opacity: 1,
             color: 'var(--navy-900)',
             fontSize: isMobile ? '40px' : '80px',
-            lineHeight: isMobile ? '44px' : '80px',
-            letterSpacing: isMobile ? '-0.8px' : '-1.6px',
           }}
         >
           My Yoga Journey
         </h2>
 
-
-
-        {/* Gallery Grid */}
+        {/* Grid */}
         <div className={`grid gap-4 ${isMobile ? 'grid-cols-2' : 'grid-cols-3'}`}>
           {displayItems.map((item, idx) => (
             <div
@@ -142,149 +188,108 @@ export default function GallerySection({ showAll = false }: Props) {
               className="gallery-item group relative overflow-hidden rounded-xl cursor-pointer"
               onClick={() => openLightbox(idx)}
             >
-              <div className="relative overflow-hidden" style={{ aspectRatio: item.type === 'video' ? '16/10' : '4/5' }}>
+              <div
+                className="relative overflow-hidden"
+                style={{ aspectRatio: item.type === 'video' ? '16/10' : '4/5' }}
+              >
                 <img
                   src={item.type === 'video' ? (item.poster_url || item.url) : item.url}
-                  alt={item.caption || 'Yoga'}
+                  alt={item.caption || ''}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  loading="lazy"
                 />
 
-                {/* Hover Overlay */}
-                <div
-                  className="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-500 opacity-0 group-hover:opacity-100"
-                  style={{ backgroundColor: 'rgba(15,29,50,0.45)' }}
-                >
+                {/* Hover */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
                   {item.type === 'video' ? (
-                    <div
-                      className="w-12 h-12 rounded-full flex items-center justify-center"
-                      style={{ backgroundColor: 'var(--gold-500)' }}
-                    >
-                      <Play size={18} fill="var(--navy-950)" style={{ color: 'var(--navy-950)', marginLeft: '2px' }} />
-                    </div>
+                    <Play size={20} />
                   ) : (
-                    <span
-                      className="font-display italic text-lg"
-                      style={{ color: 'var(--cream-50)' }}
-                    >
-                      View
-                    </span>
+                    <span>View</span>
                   )}
                 </div>
-
-                {/* Duration badge */}
-                {item.type === 'video' && item.duration && (
-                  <div
-                    className="absolute bottom-3 right-3 px-2.5 py-1 rounded-md text-xs font-medium"
-                    style={{ backgroundColor: 'rgba(15,29,50,0.75)', color: 'var(--cream-50)', fontFamily: 'var(--font-mono)' }}
-                  >
-                    {item.duration}
-                  </div>
-                )}
               </div>
-
-              {/* Caption */}
-              {item.caption && (
-                <p
-                  className="mt-3 text-sm truncate px-1"
-                  style={{ color: 'var(--navy-600)', fontFamily: 'var(--font-body)' }}
-                >
-                  {item.caption}
-                </p>
-              )}
             </div>
           ))}
         </div>
+
+        {/* Navigation */}
+        {!showAll && (
+          <div className="mt-12 flex justify-center gap-6">
+  {/* Photos */}
+  <button
+    onClick={() => navigate('/photos')}
+    className="px-7 py-3.5 rounded-full font-medium transition-all duration-300"
+    style={{
+      background: 'var(--navy-900)',
+      color: 'var(--cream-50)',
+      boxShadow: '0 8px 24px rgba(15,29,50,0.18)',
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = 'translateY(-3px)'
+      e.currentTarget.style.boxShadow = '0 12px 32px rgba(15,29,50,0.25)'
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = 'translateY(0)'
+      e.currentTarget.style.boxShadow = '0 8px 24px rgba(15,29,50,0.18)'
+    }}
+  >
+    View Photos
+  </button>
+
+  {/* Videos */}
+  <button
+    onClick={() => navigate('/videos')}
+    className="px-7 py-3.5 rounded-full font-medium transition-all duration-300"
+    style={{
+      background: 'transparent',
+      color: 'var(--navy-900)',
+      border: '1px solid var(--navy-300)',
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.background = 'var(--navy-900)'
+      e.currentTarget.style.color = 'var(--cream-50)'
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.background = 'transparent'
+      e.currentTarget.style.color = 'var(--navy-900)'
+    }}
+  >
+    View Videos
+  </button>
+</div>
+        )}
       </div>
 
-      {/* Navigation (Dashboard → Full pages) */}
-      {!showAll && (
-        <div className="mt-10 flex justify-center gap-4">
-          <button
-            onClick={() => navigate('/photos')}
-            className="px-6 py-3 rounded-full bg-navy-900 text-white hover:opacity-90 transition"
-          >
-            View Photos
-          </button>
-
-          <button
-            onClick={() => navigate('/videos')}
-            className="px-6 py-3 rounded-full bg-navy-900 text-white hover:opacity-90 transition"
-          >
-            View Videos
-          </button>
-        </div>
-      )}
-
       {/* Lightbox */}
-{lightbox.open && displayItems.length > 0 && (
-  <div
-    className="fixed inset-0 z-[200] flex items-center justify-center"  // ← change z-[80] to z-[200]
-    style={{ backgroundColor: 'rgba(15,29,50,0.94)' }}
-    onClick={closeLightbox}
-  >
-    <button
-      className="absolute top-6 right-6 transition-opacity duration-200 hover:opacity-100 z-[201]"  // ← change z-10 to z-[201]
-      style={{ color: 'var(--cream-100)', opacity: 0.6 }}
-      onClick={(e) => {
-        e.stopPropagation()   // ← add this line
-        closeLightbox()
-      }}
-    >
-      <X size={28} />
-    </button>
-
-          {displayItems.length > 1 && (
-            <>
-              <button
-                className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 transition-opacity duration-200 hover:opacity-100 z-10"
-                style={{ color: 'var(--cream-100)', opacity: 0.5 }}
-                onClick={(e) => { e.stopPropagation(); goPrev() }}
-              >
-                <ChevronLeft size={36} />
-              </button>
-              <button
-                className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 transition-opacity duration-200 hover:opacity-100 z-10"
-                style={{ color: 'var(--cream-100)', opacity: 0.5 }}
-                onClick={(e) => { e.stopPropagation(); goNext() }}
-              >
-                <ChevronRight size={36} />
-              </button>
-            </>
-          )}
-
-          <div
-            className="max-w-[88vw] max-h-[84vh] flex flex-col items-center"
-            onClick={(e) => e.stopPropagation()}
+      {lightbox.open && displayItems.length > 0 && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.9)' }}
+          onClick={closeLightbox}
+        >
+          <button
+            className="absolute top-6 right-6 z-[201]"
+            onClick={(e) => {
+              e.stopPropagation()
+              closeLightbox()
+            }}
           >
+            <X size={28} />
+          </button>
+
+          <div onClick={(e) => e.stopPropagation()}>
             {displayItems[lightbox.index].type === 'video' ? (
               <video
-                key={displayItems[lightbox.index].id}
-                className="max-w-full max-h-[72vh] rounded-xl"
+                className="max-w-[90vw] max-h-[80vh] rounded-xl"
                 autoPlay
                 controls
                 src={displayItems[lightbox.index].url}
-                poster={displayItems[lightbox.index].poster_url || undefined}
               />
             ) : (
               <img
-                key={displayItems[lightbox.index].id}
+                className="max-w-[90vw] max-h-[80vh] rounded-xl"
                 src={displayItems[lightbox.index].url}
-                alt={displayItems[lightbox.index].caption || ''}
-                className="max-w-full max-h-[72vh] object-contain rounded-xl"
               />
             )}
-            {displayItems[lightbox.index].caption && (
-              <p
-                className="mt-4 text-center font-display italic"
-                style={{ color: 'var(--cream-200)', fontSize: '16px' }}
-              >
-                {displayItems[lightbox.index].caption}
-              </p>
-            )}
-            <p className="mt-2 font-mono-label" style={{ color: 'var(--navy-400)', fontSize: '11px', letterSpacing: '2px' }}>
-              {lightbox.index + 1} / {displayItems.length}
-            </p>
           </div>
         </div>
       )}

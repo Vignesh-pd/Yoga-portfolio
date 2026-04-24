@@ -19,6 +19,8 @@ import AdminLayout from '@/admin/AdminLayout'
 import ProtectedRoute from '@/admin/ProtectedRoute'
 import PhotosPage from '@/pages/PhotosPage'
 import VideosPage from '@/pages/VideosPage'
+import { useEffect } from 'react'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 function Home() {
   return (
@@ -41,6 +43,19 @@ function Home() {
 }
 
 function App() {
+
+  useEffect(() => {
+    const handleLoad = () => {
+      setTimeout(() => {
+        ScrollTrigger.refresh()
+      }, 300)
+    }
+
+    window.addEventListener('load', handleLoad)
+
+    return () => window.removeEventListener('load', handleLoad)
+  }, [])
+
   return (
     <AuthProvider>
       <DataProvider>
@@ -49,7 +64,11 @@ function App() {
           <Route path="/photos" element={<PhotosPage />} />
           <Route path="/videos" element={<VideosPage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/*" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+          <Route path="/admin/*" element={
+            <ProtectedRoute>
+              <AdminLayout />
+            </ProtectedRoute>
+          }>
             <Route index element={<AdminDashboard />} />
             <Route path="photos" element={<AdminDashboard />} />
             <Route path="videos" element={<AdminDashboard />} />
@@ -61,6 +80,7 @@ function App() {
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+
         <Toaster
           position="top-right"
           toastOptions={{
@@ -77,5 +97,6 @@ function App() {
     </AuthProvider>
   )
 }
+
 
 export default App

@@ -22,9 +22,9 @@ export default function VideosPage() {
       <div
         className="sticky top-0 z-50 flex items-center justify-between px-6 md:px-12 py-6"
         style={{
-          background: 'linear-gradient(180deg, #f8f5f0 0%, #fdfbf7 100%)',
-          borderBottom: '1px solid rgba(0,0,0,0.06)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+          background: 'linear-gradient(180deg, #fbfaf7 0%, #fefdfb 100%)',
+          borderBottom: '1px solid rgba(0,0,0,0.04)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
         }}
       >
 
@@ -45,6 +45,21 @@ export default function VideosPage() {
             Vignesh Yoga
           </span>
         </div>
+
+        {/* CENTER — Title */}
+        <h1
+          className="page-title"
+          style={{
+            fontSize: '36px',
+            fontFamily: 'var(--font-display)',
+            color: 'var(--navy-900)',
+            letterSpacing: '2px',
+            fontWeight: 600,
+            textAlign: 'center',
+          }}
+        >
+          Videos
+        </h1>
 
         {/* RIGHT — Navigation Buttons */}
         <div className="flex items-center gap-3">
@@ -87,37 +102,6 @@ export default function VideosPage() {
           >
             ← Back to Home
           </button>
-        </div>
-      </div>
-
-      {/* 🎨 Centered Title Section */}
-      <div
-        className="px-6 md:px-12 py-16 md:py-20"
-        style={{
-          background: 'linear-gradient(180deg, #fdfbf7 0%, rgba(253,251,247,0.5) 100%)',
-          borderBottom: '1px solid rgba(0,0,0,0.03)',
-        }}
-      >
-        <div className="flex flex-col items-center">
-          <h1
-            className="page-title"
-            style={{
-              fontSize: '64px',
-              fontFamily: 'var(--font-display)',
-              color: 'var(--navy-900)',
-              letterSpacing: '-1px',
-              fontWeight: 700,
-              textAlign: 'center',
-            }}
-          >
-            Videos
-          </h1>
-
-          {/* Subtle divider */}
-          <div
-            className="mt-6 w-16 h-[2px]"
-            style={{ backgroundColor: 'var(--gold-500)', opacity: 0.6 }}
-          />
         </div>
       </div>
 
