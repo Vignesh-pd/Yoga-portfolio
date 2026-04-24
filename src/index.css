@@ -1,0 +1,465 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ─── Navy Primary ─── */
+    --navy-950: #0F1D32;
+    --navy-900: #1A2E4D;
+    --navy-800: #2C3E6B;
+    --navy-700: #3D4F78;
+    --navy-600: #5A6B90;
+    --navy-500: #7A89A8;
+    --navy-400: #9BA7BF;
+    --navy-300: #BCC4D4;
+    --navy-200: #DDE2EC;
+    --navy-100: #EFF2F7;
+    --navy-50: #F7F9FB;
+
+    /* ─── Gold Accent ─── */
+    --gold-600: #A68B4B;
+    --gold-500: #C9A96E;
+    --gold-400: #DCC9A0;
+    --gold-300: #E8DCC0;
+
+    /* ─── Warm Cream Backgrounds ─── */
+    --cream-50: #FAF8F3;
+    --cream-100: #F5F0E8;
+    --cream-200: #EDE7DA;
+    --cream-300: #E5DECF;
+    --cream-400: #D4CBB8;
+
+    /* ─── Typography ─── */
+    --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* ─── Shadows ─── */
+    --shadow-sm: 0 1px 3px rgba(15,29,50,0.04);
+    --shadow-md: 0 4px 16px rgba(15,29,50,0.06);
+    --shadow-lg: 0 12px 40px rgba(15,29,50,0.08);
+    --shadow-xl: 0 24px 60px rgba(15,29,50,0.12);
+    --shadow-gold: 0 0 24px rgba(201,169,110,0.25);
+
+    /* ─── Gradients ─── */
+    --hero-overlay: linear-gradient(135deg, rgba(15,29,50,0.78) 0%, rgba(44,62,107,0.60) 100%);
+    --warm-gradient: linear-gradient(180deg, var(--cream-50) 0%, var(--cream-100) 100%);
+    --navy-gradient: linear-gradient(180deg, var(--navy-900) 0%, var(--navy-800) 100%);
+
+    /* ─── shadcn compatibility ─── */
+    --background: 0 0% 100%;
+    --foreground: 220 40% 13%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 40% 13%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 40% 13%;
+    --primary: 220 42% 30%;
+    --primary-foreground: 40 33% 97%;
+    --secondary: 40 25% 94%;
+    --secondary-foreground: 220 40% 13%;
+    --muted: 40 25% 94%;
+    --muted-foreground: 220 15% 50%;
+    --accent: 40 25% 94%;
+    --accent-foreground: 220 40% 13%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 40 18% 86%;
+    --input: 40 18% 86%;
+    --ring: 220 42% 30%;
+    --radius: 0.5rem;
+  }
+
+  * {
+    scroll-behavior: smooth;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--navy-900);
+    background-color: var(--cream-100);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: var(--navy-800);
+    color: var(--cream-50);
+  }
+}
+
+@layer components {
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .font-mono-label {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 400;
+  }
+
+  .section-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  @media (min-width: 768px) {
+    .section-container {
+      padding-left: 48px;
+      padding-right: 48px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .section-container {
+      padding-left: 80px;
+      padding-right: 80px;
+    }
+  }
+}
+
+@layer utilities {
+  /* ─── Buttons ─── */
+  .btn-navy {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 text-sm font-semibold transition-all duration-300;
+    background-color: var(--navy-800);
+    color: var(--cream-50);
+    letter-spacing: 0.5px;
+  }
+  .btn-navy:hover {
+    background-color: var(--navy-700);
+    box-shadow: var(--shadow-gold);
+    transform: scale(1.02);
+  }
+  .btn-navy:active {
+    transform: scale(0.98);
+  }
+
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 text-sm font-semibold transition-all duration-300;
+    background-color: var(--gold-500);
+    color: var(--navy-950);
+    letter-spacing: 0.5px;
+  }
+  .btn-gold:hover {
+    background-color: var(--gold-400);
+    box-shadow: var(--shadow-gold);
+    transform: scale(1.02);
+  }
+  .btn-gold:active {
+    transform: scale(0.98);
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 text-sm font-semibold transition-all duration-300 border-[1.5px];
+    border-color: currentColor;
+    background-color: transparent;
+    color: var(--cream-50);
+    letter-spacing: 0.5px;
+  }
+  .btn-ghost:hover {
+    background-color: rgba(201, 169, 110, 0.08);
+    border-color: var(--gold-500);
+    color: var(--gold-500);
+  }
+
+  .btn-ghost-navy {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 text-sm font-semibold transition-all duration-300 border-[1.5px];
+    border-color: var(--navy-800);
+    color: var(--navy-800);
+    background-color: transparent;
+    letter-spacing: 0.5px;
+  }
+  .btn-ghost-navy:hover {
+    background-color: var(--navy-800);
+    color: var(--cream-50);
+  }
+
+  /* ─── Text Scale ─── */
+  .text-display-xl {
+    font-family: var(--font-display);
+    font-size: 56px;
+    line-height: 52px;
+    letter-spacing: -1.12px;
+    font-weight: 400;
+  }
+  @media (min-width: 768px) {
+    .text-display-xl {
+      font-size: 80px;
+      line-height: 76px;
+      letter-spacing: -1.6px;
+    }
+  }
+  @media (min-width: 1200px) {
+    .text-display-xl {
+      font-size: 120px;
+      line-height: 108px;
+      letter-spacing: -2.4px;
+    }
+  }
+
+  .text-display-lg {
+    font-family: var(--font-display);
+    font-size: 40px;
+    line-height: 44px;
+    letter-spacing: -0.8px;
+    font-weight: 400;
+  }
+  @media (min-width: 768px) {
+    .text-display-lg {
+      font-size: 56px;
+      line-height: 60px;
+      letter-spacing: -1.12px;
+    }
+  }
+  @media (min-width: 1200px) {
+    .text-display-lg {
+      font-size: 72px;
+      line-height: 76px;
+      letter-spacing: -1.44px;
+    }
+  }
+
+  .text-h1 {
+    font-family: var(--font-display);
+    font-size: 40px;
+    line-height: 44px;
+    letter-spacing: -0.8px;
+    font-weight: 400;
+  }
+  @media (min-width: 768px) {
+    .text-h1 {
+      font-size: 56px;
+      line-height: 60px;
+      letter-spacing: -1.12px;
+    }
+  }
+  @media (min-width: 1200px) {
+    .text-h1 {
+      font-size: 80px;
+      line-height: 80px;
+      letter-spacing: -1.6px;
+    }
+  }
+
+  .text-h2 {
+    font-family: var(--font-display);
+    font-size: 32px;
+    line-height: 36px;
+    letter-spacing: -0.64px;
+    font-weight: 400;
+  }
+  @media (min-width: 768px) {
+    .text-h2 {
+      font-size: 40px;
+      line-height: 44px;
+      letter-spacing: -0.8px;
+    }
+  }
+  @media (min-width: 1200px) {
+    .text-h2 {
+      font-size: 48px;
+      line-height: 52px;
+      letter-spacing: -0.96px;
+    }
+  }
+
+  .text-h3 {
+    font-family: var(--font-display);
+    font-size: 24px;
+    line-height: 28px;
+    letter-spacing: -0.36px;
+    font-weight: 500;
+  }
+  @media (min-width: 768px) {
+    .text-h3 {
+      font-size: 28px;
+      line-height: 34px;
+      letter-spacing: -0.42px;
+    }
+  }
+  @media (min-width: 1200px) {
+    .text-h3 {
+      font-size: 32px;
+      line-height: 38px;
+      letter-spacing: -0.48px;
+    }
+  }
+
+  .text-body-lg {
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 28px;
+    letter-spacing: -0.05px;
+    font-weight: 400;
+  }
+  @media (min-width: 768px) {
+    .text-body-lg {
+      font-size: 18px;
+      line-height: 30px;
+    }
+  }
+  @media (min-width: 1200px) {
+    .text-body-lg {
+      font-size: 20px;
+      line-height: 32px;
+      letter-spacing: -0.1px;
+    }
+  }
+
+  /* ─── Background Utilities ─── */
+  .bg-navy-gradient {
+    background: var(--navy-gradient);
+  }
+  .bg-warm-gradient {
+    background: var(--warm-gradient);
+  }
+  .bg-cream-50 { background-color: var(--cream-50); }
+  .bg-cream-100 { background-color: var(--cream-100); }
+  .bg-cream-200 { background-color: var(--cream-200); }
+  .bg-navy-950 { background-color: var(--navy-950); }
+  .bg-navy-900 { background-color: var(--navy-900); }
+  .bg-navy-800 { background-color: var(--navy-800); }
+}
+
+/* ─── Animations ─── */
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+.animate-bounce-subtle {
+  animation: bounce-subtle 2.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton-shimmer {
+  background: linear-gradient(90deg, var(--cream-200) 25%, var(--cream-100) 50%, var(--cream-200) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.animate-float {
+  animation: float-gentle 4s ease-in-out infinite;
+}
+
+/* ─── WhatsApp Float Tooltip ─── */
+.whatsapp-tooltip {
+  position: absolute;
+  right: 64px;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  background: var(--navy-900);
+  color: var(--cream-50);
+  font-size: 12px;
+  font-family: var(--font-body);
+  padding: 6px 12px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.group:hover .whatsapp-tooltip {
+  opacity: 1;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--cream-200);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--navy-400);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--navy-600);
+}
+
+/* ─── Quote Styling ─── */
+.quote-mark {
+  font-family: var(--font-display);
+  font-size: 96px;
+  line-height: 1;
+  color: var(--gold-500);
+  opacity: 0.4;
+}
+
+/* ─── Gallery Category Filter ─── */
+.filter-tab {
+  @apply px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer;
+  font-family: var(--font-body);
+  color: var(--navy-500);
+  background: transparent;
+  border: 1.5px solid transparent;
+}
+.filter-tab:hover {
+  color: var(--navy-800);
+  background: var(--cream-200);
+}
+.filter-tab.active {
+  color: var(--navy-800);
+  border-color: var(--navy-800);
+  background: var(--cream-50);
+}
+
+/* ─── Certificate Card ─── */
+.cert-card {
+  background: var(--cream-50);
+  border: 1px solid var(--cream-300);
+  border-radius: 12px;
+  transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+.cert-card:hover {
+  border-color: var(--gold-400);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+/* ─── Admin overrides ─── */
+.admin-nav-link {
+  @apply flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200;
+  color: var(--navy-400);
+}
+.admin-nav-link:hover {
+  color: var(--cream-50);
+  background-color: rgba(255,255,255,0.05);
+}
+.admin-nav-link.active {
+  color: var(--gold-500);
+  background-color: rgba(201, 169, 110, 0.1);
+  border-left: 3px solid var(--gold-500);
+}
